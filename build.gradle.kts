@@ -1,0 +1,96 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+group = "io.provenance.p8e.p8e-gradle-plugin"
+version = "0.1.0"
+// version = "1.0-SNAPSHOT"
+
+plugins {
+    kotlin("jvm") version "1.3.72"
+    `java-gradle-plugin`
+    `maven-publish`
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://nexus.figure.com/repository/mirror")
+        credentials {
+            username = (project.properties["nexusUser"] ?: System.getenv("NEXUS_USER")) as String
+            password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
+        }
+    }
+    maven {
+        url = uri("https://nexus.figure.com/repository/figure")
+        credentials {
+            username = (project.properties["nexusUser"] ?: System.getenv("NEXUS_USER")) as String
+            password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
+        }
+    }
+}
+
+val integrationTest: SourceSet by sourceSets.creating
+
+configurations {
+    "integrationTestImplementation" { extendsFrom(configurations["testImplementation"]) }
+    "integrationTestRuntimeOnly" { extendsFrom(configurations["testRuntimeOnly"]) }
+}
+
+dependencies {
+    implementation(kotlin("stdlib", "1.3.72"))
+    implementation(kotlin("reflect", "1.3.72"))
+
+    implementation("io.p8e:p8e-sdk:master-126")
+    implementation("org.reflections:reflections:0.9.10")
+
+    testImplementation("io.kotest:kotest-runner-junit5:4.4.+")
+    "integrationTestImplementation"("io.kotest:kotest-runner-junit5:4.4.+")
+}
+
+gradlePlugin {
+    testSourceSets(integrationTest)
+
+    plugins {
+        create("p8ePlugin") {
+            id = "io.provenance.p8e.p8e-gradle-plugin"
+            implementationClass = "io.provenance.p8e.plugin.ContractPlugin"
+        }
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+
+    testLogging.showStandardStreams = true
+
+    testLogging {
+        events = setOf(PASSED, FAILED, SKIPPED, STANDARD_ERROR)
+        exceptionFormat = FULL
+    }
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Run integration tests."
+    group = "verification"
+
+    // dependsOn("pluginUnderTestMetadata")
+
+    testClassesDirs = integrationTest.output.classesDirs
+    classpath = integrationTest.runtimeClasspath
+
+    useJUnitPlatform()
+
+    testLogging.showStandardStreams = true
+
+    testLogging {
+        events = setOf(PASSED, FAILED, SKIPPED, STANDARD_ERROR)
+        exceptionFormat = FULL
+    }
+
+    tasks.withType<Test>()
+}

@@ -1,0 +1,12 @@
+/.gradle
+/build
+.DS_Store
+build/
+lib/
+.gradle
+
+.idea/
+*.iml
+
+local.properties
+.sdkmanrc
