@@ -10,6 +10,7 @@ plugins {
     kotlin("jvm") version "1.3.72"
     `java-gradle-plugin`
     `maven-publish`
+    id("com.bmuschko.nexus") version "2.3"
 }
 
 repositories {
@@ -78,8 +79,6 @@ tasks.register<Test>("integrationTest") {
     description = "Run integration tests."
     group = "verification"
 
-    // dependsOn("pluginUnderTestMetadata")
-
     testClassesDirs = integrationTest.output.classesDirs
     classpath = integrationTest.runtimeClasspath
 
@@ -93,4 +92,25 @@ tasks.register<Test>("integrationTest") {
     }
 
     tasks.withType<Test>()
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://${System.getenv("NEXUS_HOST")}/repository/figure")
+            credentials {
+                username = (project.properties["nexusUser"] ?: System.getenv("NEXUS_USER")) as String
+                password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
+            }
+        }
+    }
+    // publications {
+    //     create<MavenPublication>("maven") {
+    //         groupId = groupId
+    //         artifactId = "library"
+    //         version = version
+
+    //         from(components["java"])
+    //     }
+    // }
 }
