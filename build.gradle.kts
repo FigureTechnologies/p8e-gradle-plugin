@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "io.provenance.p8e.p8e-gradle-plugin"
-version = "0.1.1"
+version = "0.1.2"
 // version = "1.0-SNAPSHOT"
 
 plugins {
@@ -47,6 +47,9 @@ dependencies {
 
     implementation("io.p8e:p8e-sdk:master-126")
     implementation("org.reflections:reflections:0.9.10")
+
+    // third party plugins that this plugin will apply
+    implementation("com.github.jengelman.gradle.plugins:shadow:6.1.0")
 
     testImplementation("io.kotest:kotest-runner-junit5:4.4.+")
     "integrationTestImplementation"("io.kotest:kotest-runner-junit5:4.4.+")

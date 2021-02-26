@@ -14,7 +14,6 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec
 import org.bouncycastle.jce.spec.ECPublicKeySpec
 import org.bouncycastle.util.encoders.Hex
 import org.gradle.api.Project
-import org.gradle.jvm.tasks.Jar
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import java.io.File
@@ -24,8 +23,6 @@ import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.PublicKey
 import java.security.Security
-import java.util.jar.JarFile
-import kotlin.system.exitProcess
 
 internal class Bootstrapper(
     private val project: Project,
@@ -49,7 +46,7 @@ internal class Bootstrapper(
         val protoKey = "protoKey"
         val contractProject = getProject(project, extension.contractProject)
         val protoProject = getProject(project, extension.protoProject)
-        val contractJar = getJar(contractProject)
+        val contractJar = getJar(contractProject, "shadowJar")
         val protoJar = getJar(protoProject)
         val contractClassLoader = URLClassLoader(arrayOf(contractJar.toURI().toURL()), javaClass.classLoader)
         val contracts = findContracts(contractClassLoader)
@@ -95,15 +92,6 @@ internal class Bootstrapper(
         }
     }
 
-    fun getJar(project: Project): File {
-        return (project.tasks.getByName("jar") as Jar)
-            .archiveFile
-            .orNull
-            ?.asFile
-            ?.also(::verifyJar)
-            ?: throw IllegalStateException("task :jar in ${project.name} could not be found")
-    }
-
     fun storeObject(manager: ContractManager, jar: File, location: P8eLocationExtension): ProvenanceReference {
         return manager.client.storeObject(FileInputStream(jar), location.audience.values.map { it.toPublicKey() }.toSet())
             .ref
@@ -119,16 +107,6 @@ internal class Bootstrapper(
     fun<T> findClasses(clazz: Class<T>, classLoader: ClassLoader): Set<Class<out T>> =
         Reflections("io", "com", SubTypesScanner(false), classLoader)
             .getSubTypesOf(clazz)
-
-    fun verifyJar(jar: File) {
-        try {
-            JarFile(jar)
-        } catch (e: Exception) {
-            project.logger.error("Could not verify ${jar.absolutePath} as a valid jar file.", e)
-
-            exitProcess(0)
-        }
-    }
 
     fun getKeyPair(privateKey: String): KeyPair {
         // compute private key from string

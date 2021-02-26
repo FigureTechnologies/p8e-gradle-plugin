@@ -19,7 +19,7 @@ class ContractPluginTest : WordSpec({
             .build()
             .also {
                 it.pluginManager.apply("java")
-                it.tasks.create("uberJar")
+                it.tasks.create("shadowJar")
             }
         ProjectBuilder.builder()
             .withName("proto")
@@ -64,6 +64,13 @@ class ContractPluginTest : WordSpec({
 
             project.tasks.withType(BootstrapTask::class.java).size shouldBe 1
         }
+
+        "Depend on p8e clean" {
+            val project = project()
+            val cleanTask = project.tasks.getByName("p8eClean")
+
+            project.tasks.getByName("p8eBootstrap").dependsOn.contains(cleanTask) shouldBe true
+        }
     }
 
     "Jar task" should {
@@ -81,7 +88,7 @@ class ContractPluginTest : WordSpec({
             project.plugins.hasPlugin("maven-publish") shouldBe true
         }
 
-        "Depends on p8e jar" {
+        "Depend on p8e jar" {
             val project = project()
             val jarTask = project.tasks.getByName("p8eJar")
 

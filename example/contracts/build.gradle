@@ -13,7 +13,6 @@ buildscript {
 }
 
 plugins {
-    // id "java-library"
     id "maven-publish"
     id "kotlin"
 }
@@ -22,25 +21,6 @@ dependencies {
     api project(':protos')
 
     api group: 'io.p8e', name: 'p8e-contract-base', version: 'master-126'
-}
-
-// TODO can we replace this in the gradle plugin somehow?
-task uberJar(type: Jar) {
-    dependsOn(":protos:jar")
-
-    zip64 true
-    from {
-        configurations.runtimeClasspath
-                .collect {
-                    it.isDirectory() ? it : zipTree(it)
-                            .matching {
-                                exclude 'META-INF/*.RSA'
-                                exclude 'META-INF/*.DSA'
-                                exclude 'META-INF/*.SF'
-                            }
-                }
-    }
-    with jar
 }
 
 publishing {

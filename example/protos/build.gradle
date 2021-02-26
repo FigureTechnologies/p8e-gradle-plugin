@@ -22,7 +22,6 @@ buildscript {
 
 plugins {
     id "com.google.protobuf" version "0.8.13"
-    // id "java-library"
     id "maven-publish"
     id "kotlin"
 }
@@ -71,7 +70,7 @@ protobuf {
 publishing {
     publications {
         proto(MavenPublication) {
-            from components.java
+            artifact tasks.jar
         }
     }
 }
