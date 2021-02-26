@@ -12,7 +12,7 @@ open class BootstrapTask: DefaultTask() {
 
     @TaskAction
     fun doAction() {
-        project.p8eConfiguration().bootstrapper.execute()
+        Bootstrapper(project, project.p8eConfiguration()).execute()
     }
 }
 
@@ -25,6 +25,6 @@ open class CleanTask : DefaultTask() {
 
     @TaskAction
     fun doAction() {
-        Cleaner(project).execute()
+        Cleaner(project, project.p8eConfiguration()).execute()
     }
 }

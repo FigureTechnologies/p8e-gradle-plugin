@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "io.provenance.p8e.p8e-gradle-plugin"
-version = "0.1.0"
+version = "0.1.1"
 // version = "1.0-SNAPSHOT"
 
 plugins {
@@ -31,7 +31,10 @@ repositories {
     }
 }
 
-val integrationTest: SourceSet by sourceSets.creating
+val integrationTest: SourceSet by sourceSets.creating {
+    compileClasspath += sourceSets["main"].output + configurations.testRuntimeClasspath
+    runtimeClasspath += output + compileClasspath
+}
 
 configurations {
     "integrationTestImplementation" { extendsFrom(configurations["testImplementation"]) }
@@ -104,13 +107,4 @@ publishing {
             }
         }
     }
-    // publications {
-    //     create<MavenPublication>("maven") {
-    //         groupId = groupId
-    //         artifactId = "library"
-    //         version = version
-
-    //         from(components["java"])
-    //     }
-    // }
 }

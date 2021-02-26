@@ -1,6 +1,5 @@
 package io.provenance.p8e.plugin
 
-import arrow.core.valid
 import io.p8e.ContractManager
 import io.p8e.proto.Common.ProvenanceReference
 import io.p8e.proto.PK
@@ -30,7 +29,7 @@ import kotlin.system.exitProcess
 
 internal class Bootstrapper(
     private val project: Project,
-    val config: P8eConfiguration
+    val extension: P8eExtension
 ) {
 
     init {
@@ -39,13 +38,6 @@ internal class Bootstrapper(
 
     private fun validate() {
         // TODO validate configuration is good enough to publish
-        require (project.hasProperty(CONTRACT_HASH_PACKAGE)) {
-            "Project does not have a \"$CONTRACT_HASH_PACKAGE\" property set"
-        }
-
-        require (project.hasProperty(PROTO_HASH_PACKAGE)) {
-            "Project does not have a \"$PROTO_HASH_PACKAGE\" property set"
-        }
     }
 
     @Synchronized
@@ -55,16 +47,16 @@ internal class Bootstrapper(
         val hashes = mutableMapOf<String, String>()
         val contractKey = "contractKey"
         val protoKey = "protoKey"
-        val contractProject = getProject(project, "contractProject")
-        val protoProject = getProject(project, "protoProject")
+        val contractProject = getProject(project, extension.contractProject)
+        val protoProject = getProject(project, extension.protoProject)
         val contractJar = getJar(contractProject)
         val protoJar = getJar(protoProject)
         val contractClassLoader = URLClassLoader(arrayOf(contractJar.toURI().toURL()), javaClass.classLoader)
         val contracts = findContracts(contractClassLoader)
         val protos = findProtos(contractClassLoader)
 
-        config.locations.forEach { location ->
-            project.logger.info("Publishing contracts - location: ${location.name} url: ${location.url}")
+        extension.locations.forEach { name, location ->
+            project.logger.info("Publishing contracts - location: $name url: ${location.url}")
 
             val manager = ContractManager.create(getKeyPair(location.privateKey), location.url)
             val contractJarLocation = storeObject(manager, contractJar, location)
@@ -92,11 +84,15 @@ internal class Bootstrapper(
                 ?: throw IllegalStateException("Could not find any subclasses of io.p8e.spec.P8eContract in ${contractJar.path}")
         }
 
-        project.logger.info("Writing services providers")
+        if(hashes.isEmpty()) {
+            project.logger.warn("No p8e locations were detected!")
+        } else {
+            project.logger.info("Writing services providers")
 
-        val currentTimeMillis = System.currentTimeMillis().toString()
-        ServiceProvider.writeContractHash(contractProject, currentTimeMillis, contracts, hashes.getValue(contractKey))
-        ServiceProvider.writeProtoHash(protoProject, currentTimeMillis, protos, hashes.getValue(protoKey))
+            val currentTimeMillis = System.currentTimeMillis().toString()
+            ServiceProvider.writeContractHash(contractProject, extension, currentTimeMillis, contracts, hashes.getValue(contractKey))
+            ServiceProvider.writeProtoHash(protoProject, extension, currentTimeMillis, protos, hashes.getValue(protoKey))
+        }
     }
 
     fun getJar(project: Project): File {
@@ -108,8 +104,8 @@ internal class Bootstrapper(
             ?: throw IllegalStateException("task :jar in ${project.name} could not be found")
     }
 
-    fun storeObject(manager: ContractManager, jar: File, location: P8eLocation): ProvenanceReference {
-        return manager.client.storeObject(FileInputStream(jar), location.audience.map { it.toPublicKey() }.toSet())
+    fun storeObject(manager: ContractManager, jar: File, location: P8eLocationExtension): ProvenanceReference {
+        return manager.client.storeObject(FileInputStream(jar), location.audience.values.map { it.toPublicKey() }.toSet())
             .ref
             .also { project.logger.info("Saved jar ${jar.path} with hash ${it.hash}") }
     }
@@ -153,7 +149,7 @@ internal class Bootstrapper(
         return KeyPair(publicKey, typedPrivateKey)
     }
 
-    fun PartyConfiguration.toPublicKey(): PublicKey {
+    fun P8ePartyExtension.toPublicKey(): PublicKey {
         val protoPublicKey = PK.PublicKey.parseFrom(Hex.decode(this.publicKey))
         val keyFactory = KeyFactory.getInstance("ECDH", "BC")
         val ecSpec = ECNamedCurveTable.getParameterSpec(ECUtils.LEGACY_DIME_CURVE)

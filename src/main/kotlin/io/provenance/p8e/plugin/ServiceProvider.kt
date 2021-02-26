@@ -16,7 +16,7 @@ object ServiceProvider {
     val interfaceContractPackage = "io.p8e.contracts"
     val interfaceProtoPackage = "io.p8e.proto"
 
-    private fun projectPaths(project: Project, _package: String): ProjectPaths {
+    fun projectPaths(project: Project, _package: String): ProjectPaths {
         val sourcePath = (listOf(project.projectDir.path, "src", "main", "kotlin") + _package.split("."))
             .joinToString(separator = File.separator)
         val resourcePath = listOf(project.projectDir.path, "src", "main", "resources").joinToString(separator = File.separator)
@@ -31,14 +31,14 @@ object ServiceProvider {
 
     fun writeContractHash(
         project: Project,
+        extension: P8eExtension,
         uid: String,
         contracts: Set<Class<out P8eContract>>,
         contractHash: String
     ) {
-        val _package = project.property(CONTRACT_HASH_PACKAGE) as String
         val contractHashContent =
             """
-package $_package
+package ${extension.contractHashPackage}
 
 import io.p8e.contracts.ContractHash
 
@@ -59,8 +59,8 @@ class ContractHash$uid : ContractHash {
     }
 }
             """
-        val contractHashServiceContent = "$_package.ContractHash$uid"
-        val projectPaths = projectPaths(project, _package)
+        val contractHashServiceContent = "${extension.contractHashPackage}.ContractHash$uid"
+        val projectPaths = projectPaths(project, extension.contractHashPackage)
 
         File(projectPaths.sourcePath).mkdirs()
         File(projectPaths.serviceProviderImplPath).mkdirs()
@@ -82,14 +82,14 @@ class ContractHash$uid : ContractHash {
 
     fun writeProtoHash(
         project: Project,
+        extension: P8eExtension,
         uid: String,
         protos: Set<Class<out com.google.protobuf.Message>>,
         protoHash: String
     ) {
-        val _package = project.property(PROTO_HASH_PACKAGE) as String
         val protoHashContent =
             """
-package $_package
+package ${extension.protoHashPackage}
 
 import io.p8e.proto.ProtoHash
 
@@ -110,8 +110,8 @@ class ProtoHash$uid : ProtoHash {
     }
 }
             """
-        val protoHashServiceContent = "$_package.ProtoHash$uid"
-        val projectPaths = projectPaths(project, _package)
+        val protoHashServiceContent = "${extension.protoHashPackage}.ProtoHash$uid"
+        val projectPaths = projectPaths(project, extension.protoHashPackage)
 
         File(projectPaths.sourcePath).mkdirs()
         File(projectPaths.serviceProviderImplPath).mkdirs()
@@ -131,9 +131,8 @@ class ProtoHash$uid : ProtoHash {
             .writeText(protoHashServiceContent)
     }
 
-    fun cleanContracts(project: Project) {
-        val _package = project.property(CONTRACT_HASH_PACKAGE) as String
-        val projectPaths = projectPaths(project, _package)
+    fun cleanContracts(project: Project, extension: P8eExtension) {
+        val projectPaths = projectPaths(project, extension.contractHashPackage)
 
         File(projectPaths.sourcePath).mkdirs()
         File(projectPaths.serviceProviderImplPath).mkdirs()
@@ -147,9 +146,8 @@ class ProtoHash$uid : ProtoHash {
             .also { it.delete() }
     }
 
-    fun cleanProtos(project: Project) {
-        val _package = project.property(PROTO_HASH_PACKAGE) as String
-        val projectPaths = projectPaths(project, _package)
+    fun cleanProtos(project: Project, extension: P8eExtension) {
+        val projectPaths = projectPaths(project, extension.protoHashPackage)
 
         File(projectPaths.sourcePath).mkdirs()
         File(projectPaths.serviceProviderImplPath).mkdirs()

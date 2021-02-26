@@ -12,17 +12,9 @@ class ContractPluginTest : WordSpec({
         val project = ProjectBuilder.builder()
             .withName("test")
             .build()
-            .also {
-                it.extensions.add("contractProject", "contracts")
-                it.extensions.add("protoProject", "protos")
-
-                it.extensions.add("contractHashPackage", "io.p8e.contracts.test")
-                it.extensions.add("protoHashPackage", "io.p8e.proto.test")
-
-                it.pluginManager.apply(ContractPlugin::class.java)
-            } as ProjectInternal
+            .also { it.pluginManager.apply(ContractPlugin::class.java) } as ProjectInternal
         ProjectBuilder.builder()
-            .withName("contracts")
+            .withName("contract")
             .withParent(project)
             .build()
             .also {
@@ -30,7 +22,7 @@ class ContractPluginTest : WordSpec({
                 it.tasks.create("uberJar")
             }
         ProjectBuilder.builder()
-            .withName("protos")
+            .withName("proto")
             .withParent(project)
             .build()
             .also { it.pluginManager.apply("java") }

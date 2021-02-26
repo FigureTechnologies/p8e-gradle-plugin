@@ -12,28 +12,25 @@ private const val JAR_TASK = "p8eJar"
 class ContractPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        project.extensions.create(
-            EXTENSION_NAME,
-            P8eConfiguration::class.java,
-            project
-        )
+        val extension = project.extensions.create<P8eExtension>(EXTENSION_NAME, P8eExtension::class.java)
 
         project.pluginManager.apply("maven-publish")
 
         project.evaluationDependsOnChildren()
 
         project.afterEvaluate {
-            val contractProject = getProject(it, "contractProject")
+            val contractProject = getProject(it, extension.contractProject)
             val contractJarTask = contractProject.tasks.getByName("jar")
+            // TODO we should be able to infer the uberjar task name and then default to "uberJar"
             val contractUberJarTask = contractProject.tasks.getByName("uberJar")
-            val protoProject = getProject(it, "protoProject")
+            val protoProject = getProject(it, extension.protoProject)
             val protoJarTask = protoProject.tasks.getByName("jar")
 
             it.tasks.register(CLEAN_TASK, CleanTask::class.java)
 
             it.tasks.register(JAR_TASK) { task ->
                 task.group = "P8e"
-                task.description = "Builds jars for projects specified in \"project.ext.contractProject\" and \"project.ext.protoProject\"."
+                task.description = "Builds jars for projects specified by \"contractProject\" and \"protoProject\"."
 
                 task.dependsOn(protoJarTask)
                 task.dependsOn(contractJarTask)
@@ -58,6 +55,6 @@ class ContractPlugin : Plugin<Project> {
     }
 }
 
-internal fun Project.p8eConfiguration(): P8eConfiguration =
-    extensions.getByName(EXTENSION_NAME) as? P8eConfiguration
+internal fun Project.p8eConfiguration(): P8eExtension =
+    extensions.getByName(EXTENSION_NAME) as? P8eExtension
         ?: throw IllegalStateException("$EXTENSION_NAME is not of the correct schema")
