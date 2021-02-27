@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "io.provenance.p8e.p8e-gradle-plugin"
-version = "0.1.2"
+version = "0.1.3"
 // version = "1.0-SNAPSHOT"
 
 plugins {

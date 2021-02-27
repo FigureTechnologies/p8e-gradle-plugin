@@ -14,8 +14,6 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec
 import org.bouncycastle.jce.spec.ECPublicKeySpec
 import org.bouncycastle.util.encoders.Hex
 import org.gradle.api.Project
-import org.reflections.Reflections
-import org.reflections.scanners.SubTypesScanner
 import java.io.File
 import java.io.FileInputStream
 import java.net.URLClassLoader
@@ -97,16 +95,6 @@ internal class Bootstrapper(
             .ref
             .also { project.logger.info("Saved jar ${jar.path} with hash ${it.hash}") }
     }
-
-    fun findContracts(classLoader: ClassLoader): Set<Class<out io.p8e.spec.P8eContract>> =
-        findClasses(io.p8e.spec.P8eContract::class.java, classLoader)
-
-    fun findProtos(classLoader: ClassLoader): Set<Class<out com.google.protobuf.Message>> =
-        findClasses(com.google.protobuf.Message::class.java, classLoader)
-
-    fun<T> findClasses(clazz: Class<T>, classLoader: ClassLoader): Set<Class<out T>> =
-        Reflections("io", "com", SubTypesScanner(false), classLoader)
-            .getSubTypesOf(clazz)
 
     fun getKeyPair(privateKey: String): KeyPair {
         // compute private key from string

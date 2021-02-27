@@ -81,6 +81,14 @@ class ContractPluginTest : WordSpec({
         }
     }
 
+    "Check task" should {
+        "Exist" {
+            val project = project()
+
+            project.tasks.getByName("p8eCheck").enabled shouldBe true
+        }
+    }
+
     "Maven plugin" should {
         "Exist" {
             val project = project()

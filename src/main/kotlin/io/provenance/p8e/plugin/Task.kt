@@ -32,7 +32,7 @@ open class CheckTask : DefaultTask() {
 
     init {
         group = "P8e"
-        description = "Builds jars for projects specified by \"contractProject\" and \"protoProject\" and checks contracts subclassing P8eContract against ruleset defined in the p8e-sdk."
+        description = "Checks contracts subclassing P8eContract against ruleset defined in the p8e-sdk."
     }
 
     @TaskAction

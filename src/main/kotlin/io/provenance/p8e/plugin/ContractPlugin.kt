@@ -1,13 +1,12 @@
 package io.provenance.p8e.plugin
 
-import com.github.jengelman.gradle.plugins.shadow.ShadowBasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 
 private const val EXTENSION_NAME = "p8e"
 
 private const val BOOTSTRAP_TASK = "p8eBootstrap"
+private const val CHECK_TASK = "p8eCheck"
 private const val CLEAN_TASK = "p8eClean"
 private const val JAR_TASK = "p8eJar"
 
@@ -32,7 +31,14 @@ class ContractPlugin : Plugin<Project> {
 
             it.tasks.register(CLEAN_TASK, CleanTask::class.java)
 
-            it.tasks.register(JAR_TASK, CheckTask::class.java) { task ->
+            it.tasks.register(CHECK_TASK, CheckTask::class.java) { task ->
+                task.dependsOn(contractUberJarTask)
+            }
+
+            it.tasks.register(JAR_TASK) { task ->
+                task.group = "P8e"
+                task.description = "Builds jars for projects specified by \"contractProject\" and \"protoProject\"."
+
                 task.dependsOn(protoJarTask)
                 task.dependsOn(contractJarTask)
 
