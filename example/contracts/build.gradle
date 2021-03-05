@@ -20,7 +20,7 @@ plugins {
 dependencies {
     api project(':protos')
 
-    api group: 'io.p8e', name: 'p8e-contract-base', version: 'master-126'
+    implementation("io.provenance.p8e:p8e-contract-base:0.1.0")
 }
 
 publishing {

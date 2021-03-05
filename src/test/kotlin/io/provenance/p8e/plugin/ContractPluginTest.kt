@@ -35,7 +35,7 @@ class ContractPluginTest : WordSpec({
     "Using the plugin ID" should {
         "Apply the plugin" {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply("io.provenance.p8e.p8e-gradle-plugin")
+            project.pluginManager.apply("io.provenance.p8e.p8e-publish")
 
             project.plugins.getPlugin(ContractPlugin::class.java) shouldNotBe null
         }

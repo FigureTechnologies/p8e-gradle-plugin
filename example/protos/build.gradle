@@ -29,10 +29,8 @@ plugins {
 sourceSets.main.java.srcDirs += 'build/generated/source/proto/main/java'
 sourceSets.main.java.srcDirs += 'src/main/kotlin'
 
-// configurations.getByName("api").canBeResolved(true)
-
 dependencies {
-    api group: 'io.p8e', name: 'p8e-contract-base', version: 'master-126'
+    implementation("io.provenance.p8e:p8e-contract-base:0.1.0")
 
     compile "com.google.protobuf:protobuf-java:$protobuf_version"
     compile "com.google.protobuf:protobuf-java-util:$protobuf_version"

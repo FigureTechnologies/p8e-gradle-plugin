@@ -2,12 +2,12 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "io.provenance.p8e.p8e-gradle-plugin"
-version = "0.1.3"
+group = "io.provenance.p8e.p8e-publish"
+version = "0.2.0"
 // version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.30"
     `java-gradle-plugin`
     `maven-publish`
     id("com.bmuschko.nexus") version "2.3"
@@ -29,6 +29,7 @@ repositories {
             password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
         }
     }
+    mavenLocal()
 }
 
 val integrationTest: SourceSet by sourceSets.creating {
@@ -42,11 +43,17 @@ configurations {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", "1.3.72"))
-    implementation(kotlin("reflect", "1.3.72"))
+    implementation(kotlin("stdlib", "1.4.30"))
+    implementation(kotlin("reflect", "1.4.30"))
 
-    implementation("io.p8e:p8e-sdk:master-126")
     implementation("org.reflections:reflections:0.9.10")
+
+    implementation("io.provenance.p8e:p8e-sdk:0.1.2")
+    // implementation("io.provenance.p8e:p8e-sdk:1.0-SNAPSHOT")
+
+    implementation("commons-io:commons-io:2.8.0")
+    implementation("com.google.protobuf:protobuf-java:3.12.0")
+    implementation("org.bouncycastle:bcprov-jdk15on:1.68")
 
     // third party plugins that this plugin will apply
     implementation("com.github.jengelman.gradle.plugins:shadow:6.1.0")
@@ -60,7 +67,7 @@ gradlePlugin {
 
     plugins {
         create("p8ePlugin") {
-            id = "io.provenance.p8e.p8e-gradle-plugin"
+            id = "io.provenance.p8e.p8e-publish"
             implementationClass = "io.provenance.p8e.plugin.ContractPlugin"
         }
     }

@@ -1,1 +1,1 @@
-rootProject.name = "p8e-gradle-plugin"
+rootProject.name = "p8e-publish"
