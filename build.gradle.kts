@@ -3,8 +3,8 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "io.provenance.p8e.p8e-publish"
-version = "0.2.0"
 // version = "1.0-SNAPSHOT"
+version = "0.2.1"
 
 plugins {
     kotlin("jvm") version "1.4.30"
@@ -48,7 +48,7 @@ dependencies {
 
     implementation("org.reflections:reflections:0.9.10")
 
-    implementation("io.provenance.p8e:p8e-sdk:0.1.2")
+    implementation("io.provenance.p8e:p8e-sdk:0.3.0")
     // implementation("io.provenance.p8e:p8e-sdk:1.0-SNAPSHOT")
 
     implementation("commons-io:commons-io:2.8.0")

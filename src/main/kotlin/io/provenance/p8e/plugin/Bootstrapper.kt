@@ -4,8 +4,8 @@ import io.p8e.ContractManager
 import io.p8e.proto.Common.ProvenanceReference
 import io.p8e.proto.PK
 import io.p8e.spec.ContractSpecMapper
-import io.provenance.core.encryption.ecies.ECUtils
-import io.provenance.core.encryption.util.ByteUtil
+import io.provenance.p8e.encryption.ecies.ECUtils
+import io.provenance.p8e.encryption.util.ByteUtil
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
 import org.bouncycastle.jce.ECNamedCurveTable
@@ -32,7 +32,12 @@ internal class Bootstrapper(
     }
 
     private fun validate() {
-        // TODO validate configuration is good enough to publish
+        extension.locations.forEach { name, location ->
+            require(!location.privateKey.isNullOrBlank()) { "privateKey is required for location $name" }
+            require(!location.url.isNullOrBlank()) { "url is required for location $name" }
+        }
+
+        // TODO: add additional validation checks that configuration is good enough to publish
     }
 
     @Synchronized
@@ -53,7 +58,7 @@ internal class Bootstrapper(
         extension.locations.forEach { name, location ->
             project.logger.info("Publishing contracts - location: $name url: ${location.url}")
 
-            val manager = ContractManager.create(getKeyPair(location.privateKey), location.url)
+            val manager = ContractManager.create(getKeyPair(location.privateKey!!), location.url!!)
             val contractJarLocation = storeObject(manager, contractJar, location)
                 .also {
                     require (it.hash == hashes.getOrDefault(contractKey, it.hash)) {

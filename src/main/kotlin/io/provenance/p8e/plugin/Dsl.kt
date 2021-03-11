@@ -5,8 +5,8 @@ open class P8ePartyExtension {
 }
 
 open class P8eLocationExtension {
-    var privateKey: String = ""
-    var url: String = ""
+    var privateKey: String? = ""
+    var url: String? = ""
     var audience: Map<String, P8ePartyExtension> = emptyMap()
 }
 
