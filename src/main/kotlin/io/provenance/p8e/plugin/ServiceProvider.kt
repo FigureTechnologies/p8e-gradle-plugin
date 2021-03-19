@@ -54,6 +54,10 @@ class ContractHash$uid : ContractHash {
         return classes
     }
     
+    override fun getUuid(): String {
+        return "$uid"
+    }
+
     override fun getHash(): String {
         return "$contractHash"
     }
@@ -105,6 +109,10 @@ class ProtoHash$uid : ProtoHash {
         return classes
     }
     
+    override fun getUuid(): String {
+        return "$uid"
+    }
+
     override fun getHash(): String {
         return "$protoHash"
     }

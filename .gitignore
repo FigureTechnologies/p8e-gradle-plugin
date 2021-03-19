@@ -13,3 +13,7 @@ example/userHome
 local.properties
 .sdkmanrc
 
+example/contracts/src/main/kotlin/io/p8e/contracts/example/ContractHash*.kt
+example/contracts/src/main/resources/META-INF/services/io.p8e.contracts.ContractHash
+example/protos/src/main/kotlin/io/p8e/proto/example/ProtoHash*.kt
+example/protos/src/main/resources/META-INF/services/io.p8e.proto.ProtoHash
