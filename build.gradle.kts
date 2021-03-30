@@ -3,17 +3,18 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "io.provenance.p8e.p8e-publish"
-// version = "1.0-SNAPSHOT"
-version = "0.3.2"
+version = (project.property("version") as String?)?.takeUnless { it.isBlank() } ?: "1.0-SNAPSHOT"
+// version = '1.0-SNAPSHOT'
 
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.32"
     `java-gradle-plugin`
     `maven-publish`
-    id("com.bmuschko.nexus") version "2.3"
+    id("com.bmuschko.nexus") version "2.3.1"
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         url = uri("https://nexus.figure.com/repository/mirror")
@@ -29,7 +30,6 @@ repositories {
             password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
         }
     }
-    mavenLocal()
 }
 
 val integrationTest: SourceSet by sourceSets.creating {
@@ -43,13 +43,13 @@ configurations {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", "1.4.30"))
-    implementation(kotlin("reflect", "1.4.30"))
+    implementation(kotlin("stdlib", "1.4.32"))
+    implementation(kotlin("reflect", "1.4.32"))
 
     implementation("org.reflections:reflections:0.9.10")
 
-    implementation("io.provenance.p8e:p8e-sdk:0.4.0-beta.1")
-    // implementation("io.provenance.p8e:p8e-sdk:1.0-SNAPSHOT")
+    // implementation("io.provenance.p8e:p8e-sdk:0.4.0")
+    implementation("io.provenance.p8e:p8e-sdk:1.0-SNAPSHOT")
 
     implementation("commons-io:commons-io:2.8.0")
     implementation("com.google.protobuf:protobuf-java:3.12.0")

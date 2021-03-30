@@ -9,6 +9,7 @@ import io.p8e.spec.P8eContract;
 public class ExampleContracts {
 
     @Participants(roles = {PartyType.OWNER})
+    @ScopeSpecification(names = {"io.p8e.contracts.example.helloWorld"})
     public static class HelloWorldJavaContract extends P8eContract {
         @Function(invokedBy = PartyType.OWNER)
         @Fact(name = "name")

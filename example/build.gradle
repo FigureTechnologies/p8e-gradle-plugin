@@ -12,14 +12,14 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.30"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     }
 }
 
 plugins {
-    id "io.provenance.p8e.p8e-publish" version "0.3.2"
-    // id "io.provenance.p8e.p8e-publish" version "1.0-SNAPSHOT"
+    // id "io.provenance.p8e.p8e-publish" version "0.3.2"
+    id "io.provenance.p8e.p8e-publish" version "1.0-SNAPSHOT"
 }
 
 allprojects {
@@ -27,6 +27,7 @@ allprojects {
     version '1.0-SNAPSHOT'
 
     repositories {
+        mavenLocal()
         maven {
             url "https://nexus.figure.com/repository/mirror"
             credentials {

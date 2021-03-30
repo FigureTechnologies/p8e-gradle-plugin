@@ -1,5 +1,7 @@
 package io.provenance.p8e.plugin
 
+// TODO implement type safe builders
+// https://kotlinlang.org/docs/type-safe-builders.html#how-it-works
 open class P8ePartyExtension {
     var publicKey: String = ""
 }
