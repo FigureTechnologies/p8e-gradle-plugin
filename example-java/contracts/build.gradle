@@ -1,0 +1,24 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id "maven-publish"
+    id "java-library"
+}
+
+dependencies {
+    api project(':protos')
+
+    implementation("io.provenance.scope:contract-base:0.4.0")
+}
+
+publishing {
+    publications {
+        contract(MavenPublication) {
+            artifact tasks.jar
+        }
+    }
+}

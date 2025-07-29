@@ -1,18 +1,48 @@
 # p8e-gradle-plugin
 
-P8e gradle plugin allows for publishing P8e Contracts against a [P8e](https://github.com/provenance-io/p8e) environment. See [P8e docs](https://app.gitbook.com/@provenance/s/provenance-docs/p8e/overview) for relevant background and associated material.
+p8e gradle plugin allows for publishing p8e Contracts against a [p8e](https://github.com/provenance-io/p8e) environment. See [p8e docs](https://docs.provenance.io/p8e/overview) for relevant background and associated material.
 
 ## Status
 
-TODO status badges
+[![Latest Release][release-badge]][release-latest]
+[![Code Coverage][code-coverage-badge]][code-coverage-report]
+[![License][license-badge]][license-url]
+[![LOC][loc-badge]][loc-report]
+
+[code-coverage-badge]: https://codecov.io/gh/provenance-io/p8e-gradle-plugin/branch/main/graph/badge.svg
+[code-coverage-report]: https://app.codecov.io/gh/provenance-io/p8e-gradle-plugin
+
+[release-badge]: https://img.shields.io/github/v/tag/provenance-io/p8e-gradle-plugin.svg?sort=semver
+[release-latest]: https://github.com/provenance-io/p8e-gradle-plugin/releases/latest
+
+[license-badge]: https://img.shields.io/github/license/provenance-io/p8e-gradle-plugin.svg
+[license-url]: https://github.com/provenance-io/p8e-gradle-plugin/blob/main/LICENSE
+
+[loc-badge]: https://tokei.rs/b1/github/provenance-io/p8e-gradle-plugin
+[loc-report]: https://github.com/provenance-io/p8e-gradle-plugin
+
+NOTE: Versions prior to `0.5.0` are meant to bootstrap contracts with the legacy P8e Execution Environment.
 
 WARNING: Versions prior to `1.0.0` should be considered unstable and API changes expected.
 
 ## Overview
 
-Having an understanding of [P8e](https://app.gitbook.com/@provenance/s/provenance-docs/p8e/overview) is strongly recommended.
+Having an understanding of the [Provenance Metadata module](https://docs.provenance.io/modules/metadata-module) is strongly recommended.
 
-// TODO finish this section
+In order to execute contracts with the [Provenance Scope SDK](https://github.com/provenance-io/p8e-scope-sdk), the contracts must be published into
+your execution environment. This gradle plugin provides a set of tasks in order to accomplish that. Publishing contracts performs the following
+high level actions in order to allow contracts to be executed:
+
+- An uberjar is built which contains a set of contracts and all associated protobuf messages included in them. This uberjar is persisted to
+p8e's encrypted [object-store](https://github.com/provenance-io/object-store). This allows p8e to later pull it and make use of a
+[Class Loader](https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html) to load it at runtime.
+- A concrete implementation of [ContractHash](https://github.com/provenance-io/p8e-scope-sdk/blob/main/contract-base/src/main/kotlin/io/provenance/scope/contract/contracts/ContractHash.kt)
+is generated and stored alongside your source code. Similarly, an implementation of
+[ProtoHash](https://github.com/provenance-io/p8e-scope-sdk/blob/main/contract-proto/src/main/kotlin/io/provenance/scope/contract/proto/ProtoHash.kt)
+is also generated. These classes will be built into the jars that are depended on by your application that will
+execute contracts. These classes provide a mapping from P8eContracts and their associated protobuf messages to the hash of the
+uberjar they are contained within. Ultimately, the sdk will make use of these classes via the
+[service provider](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html) facility.
 
 ## Tasks
 
@@ -20,17 +50,20 @@ Having an understanding of [P8e](https://app.gitbook.com/@provenance/s/provenanc
 P8e tasks
 ---------
 p8eBootstrap - Bootstraps all scanned classes subclassing io.p8e.spec.P8eContract and com.google.protobuf.Message to one or more p8e locations.
-p8eCheck - Checks contracts subclassing P8eContract against ruleset defined in the p8e-sdk.
+p8eCheck - Checks contracts subclassing P8eContract against ruleset defined in the sdk.
 p8eClean - Removes all generated hash files and java service provider files.
 p8eJar - Builds jars for projects specified by "contractProject" and "protoProject".
 ```
 
-## Minimal Example
+## Usage
 
-// TODO
-This example is runnable from [here]().
+Below is a sample gradle block written in `groovy`.
 
 ```groovy
+plugins {
+    id "io.provenance.p8e.p8e-publish" version "<see latest release>"
+}
+
 // This block specifies the configuration needed to connect to a p8e instance as well as the audience list
 // for all of the objects that will be created.
 p8e {
@@ -39,15 +72,27 @@ p8e {
     contractProject = "contracts" // defaults to "contract"
     protoProject = "protos" // defaults to "proto"
 
+    // Output source classes will be written in this language.
+    language = "java" // defaults to java - current options are ["java", "kt"]
     // Package locations that the ContractHash and ProtoHash source files will be written to.
     contractHashPackage = "io.p8e.contracts.example"
     protoHashPackage = "io.p8e.proto.example"
-
+    
+    // Specifies the root packages to search in when building contractHash and protoHash classes. Defaults to ["io", "com"]
+    includePackages = ["io", "com"]
+    
     // specifies all of the p8e locations that this plugin will bootstrap to.
     locations = [
         local: new io.provenance.p8e.plugin.P8eLocationExtension(
-            url: System.getenv('API_URL'),
-            privateKey: System.getenv('PRIVATE_KEY'),
+            osUrl: System.getenv('OS_GRPC_URL'),
+            provenanceUrl: System.getenv('PROVENANCE_GRPC_URL'),
+            chainId: System.getenv('CHAIN_ID'),
+            encryptionPrivateKey: System.getenv('ENCRYPTION_PRIVATE_KEY'),
+            signingPrivateKey: System.getenv('SIGNING_PRIVATE_KEY'),
+            txBatchSize: "10",
+            osHeaders: [
+                // optional object store grpc headers here
+            ],
 
             audience: [
                 local1: new io.provenance.p8e.plugin.P8ePartyExtension(
