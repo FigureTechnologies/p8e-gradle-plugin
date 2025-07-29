@@ -1,5 +1,7 @@
 package io.provenance.p8e.plugin
 
+import io.provenance.scope.contract.spec.P8eContract
+import io.provenance.scope.contract.spec.P8eScopeSpecification
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 import org.reflections.Reflections
@@ -21,12 +23,15 @@ fun getJar(project: Project, taskName: String = "jar"): File {
         ?: throw IllegalStateException("task :$taskName in ${project.name} could not be found")
 }
 
-fun findContracts(classLoader: ClassLoader): Set<Class<out io.p8e.spec.P8eContract>> =
-    findClasses(io.p8e.spec.P8eContract::class.java, classLoader)
+fun findScopes(classLoader: ClassLoader, includePackages: Array<String>): Set<Class<out P8eScopeSpecification>> =
+    findClasses(P8eScopeSpecification::class.java, classLoader, includePackages)
 
-fun findProtos(classLoader: ClassLoader): Set<Class<out com.google.protobuf.Message>> =
-    findClasses(com.google.protobuf.Message::class.java, classLoader)
+fun findContracts(classLoader: ClassLoader, includePackages: Array<String>): Set<Class<out P8eContract>> =
+    findClasses(P8eContract::class.java, classLoader, includePackages)
 
-fun<T> findClasses(clazz: Class<T>, classLoader: ClassLoader): Set<Class<out T>> =
-    Reflections("io", "com", SubTypesScanner(false), classLoader)
+fun findProtos(classLoader: ClassLoader, includePackages: Array<String>): Set<Class<out com.google.protobuf.Message>> =
+    findClasses(com.google.protobuf.Message::class.java, classLoader, includePackages)
+
+fun<T> findClasses(clazz: Class<T>, classLoader: ClassLoader, includePackages: Array<String>): Set<Class<out T>> =
+    Reflections(includePackages, SubTypesScanner(false), classLoader)
         .getSubTypesOf(clazz)

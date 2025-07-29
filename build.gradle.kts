@@ -3,78 +3,74 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "io.provenance.p8e.p8e-publish"
-version = (project.property("version") as String?)?.takeUnless { it.isBlank() } ?: "1.0-SNAPSHOT"
-// version = '1.0-SNAPSHOT'
+version = (project.property("version") as String?)
+    ?.takeUnless { it.isBlank() || it == "unspecified" }
+    ?: "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.4.32"
-    `java-gradle-plugin`
-    `maven-publish`
-    id("com.bmuschko.nexus") version "2.3.1"
+    id("com.gradle.plugin-publish") version "1.2.1"
+    jacoco
+    kotlin("jvm") version "1.9.10"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        url = uri("https://nexus.figure.com/repository/mirror")
-        credentials {
-            username = (project.properties["nexusUser"] ?: System.getenv("NEXUS_USER")) as String
-            password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
-        }
-    }
-    maven {
-        url = uri("https://nexus.figure.com/repository/figure")
-        credentials {
-            username = (project.properties["nexusUser"] ?: System.getenv("NEXUS_USER")) as String
-            password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
-        }
-    }
+    maven { url = uri("https://javadoc.jitpack.io") }
+    maven { url = uri("https://plugins.gradle.org/m2/") }
 }
 
 val integrationTest: SourceSet by sourceSets.creating {
-    compileClasspath += sourceSets["main"].output + configurations.testRuntimeClasspath
+    compileClasspath += files(sourceSets["main"].output, configurations.testRuntimeClasspath)
     runtimeClasspath += output + compileClasspath
 }
 
 configurations {
-    "integrationTestImplementation" { extendsFrom(configurations["testImplementation"]) }
-    "integrationTestRuntimeOnly" { extendsFrom(configurations["testRuntimeOnly"]) }
-}
-
-dependencies {
-    implementation(kotlin("stdlib", "1.4.32"))
-    implementation(kotlin("reflect", "1.4.32"))
-
-    implementation("org.reflections:reflections:0.9.10")
-
-    // implementation("io.provenance.p8e:p8e-sdk:0.4.0")
-    implementation("io.provenance.p8e:p8e-sdk:1.0-SNAPSHOT")
-
-    implementation("commons-io:commons-io:2.8.0")
-    implementation("com.google.protobuf:protobuf-java:3.12.0")
-    implementation("org.bouncycastle:bcprov-jdk15on:1.68")
-
-    // third party plugins that this plugin will apply
-    implementation("com.github.jengelman.gradle.plugins:shadow:6.1.0")
-
-    testImplementation("io.kotest:kotest-runner-junit5:4.4.+")
-    "integrationTestImplementation"("io.kotest:kotest-runner-junit5:4.4.+")
-}
-
-gradlePlugin {
-    testSourceSets(integrationTest)
-
-    plugins {
-        create("p8ePlugin") {
-            id = "io.provenance.p8e.p8e-publish"
-            implementationClass = "io.provenance.p8e.plugin.ContractPlugin"
-        }
+    configurations["integrationTestImplementation"].also { intTestImplementation ->
+        intTestImplementation.extendsFrom(configurations["testImplementation"])
+    }
+    configurations["integrationTestRuntimeOnly"].also { intTestRuntimeOnly ->
+        intTestRuntimeOnly.extendsFrom(configurations["testRuntimeOnly"])
     }
 }
 
+dependencies {
+    listOf(
+        libs.bundles.kotlinLibs,
+        libs.bundles.provenance,
+        libs.bundles.grpc,
+        libs.bundles.bouncycastle,
+
+        libs.figure.hdwallet,
+
+        libs.reflections,
+        libs.commons,
+        libs.protobuf,
+
+        // third party plugins that this plugin will apply
+        libs.shadow,
+
+        // added for copied StdSignature functionality
+        libs.bundles.kethereum,
+        libs.bundles.jackson,
+    ).forEach(::implementation)
+
+    listOf(
+        libs.bundles.kotest
+    ).forEach(::testImplementation)
+
+    configurations["integrationTestImplementation"](libs.kotest.runner4)
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 tasks.withType<Test> {
@@ -107,14 +103,29 @@ tasks.register<Test>("integrationTest") {
     tasks.withType<Test>()
 }
 
-publishing {
-    repositories {
-        maven {
-            url = uri("https://${System.getenv("NEXUS_HOST")}/repository/figure")
-            credentials {
-                username = (project.properties["nexusUser"] ?: System.getenv("NEXUS_USER")) as String
-                password = (project.properties["nexusPass"] ?: System.getenv("NEXUS_PASS")) as String
-            }
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+}
+
+gradlePlugin {
+    testSourceSets(integrationTest)
+    website = "https://github.com/provenance-io/p8e-gradle-plugin"
+    vcsUrl = "https://github.com/provenance-io/p8e-gradle-plugin.git"
+
+    plugins {
+        create("p8ePlugin") {
+            id = "io.provenance.p8e.p8e-publish"
+            displayName = "p8e gradle plugin"
+            description = "Publishes P8eContract classes to Provenance P8e execution environments"
+            implementationClass = "io.provenance.p8e.plugin.ContractPlugin"
+            tags = listOf("provenance", "provenance.io", "p8e", "bootstrap", "publish")
         }
     }
 }
