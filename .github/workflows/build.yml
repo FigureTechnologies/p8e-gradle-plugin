@@ -1,0 +1,63 @@
+name: Build
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - ready_for_review
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: gradle-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: zulu
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
+          cache-cleanup: on-success
+          gradle-home-cache-includes: |
+            caches
+            notifications
+            jdks
+            wrapper
+
+      - name: Build with Gradle
+        run: ./gradlew build jacocoTestReport
+
+      # TODO: Investigate state of integration tests
+      # - name: Run Integration Tests with Gradle
+      #   run: ./gradlew integrationTest -Pversion=$VERSION
+      #   env:
+      #     API_URL: ${{ secrets.INTEGRATION_TEST_API_URL }}
+      #     PRIVATE_KEY: ${{ secrets.INTEGRATION_TEST_PRIVATE_KEY }}
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: ${{ !cancelled() }}
+        with:
+          junit_files: "**/build/test-results/**/*.xml"
+          large_files: true
+          report_individual_runs: true
+
+      - name: Upload code coverage report
+        uses: codecov/codecov-action@v5
+        with:
+          directory: build/reports/jacoco/test

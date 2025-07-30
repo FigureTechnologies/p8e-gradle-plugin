@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "io.provenance.p8e.p8e-publish"
+group = "io.provenance.p8e.p8e-publish" // TODO: Change
 version = (project.property("version") as String?)
     ?.takeUnless { it.isBlank() || it == "unspecified" }
     ?: "1.0-SNAPSHOT"

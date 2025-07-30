@@ -1,13 +1,14 @@
-<!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺
-v                               ✰  Thanks for creating a PR! ✰
-v    Before smashing the submit button please review the checkboxes.
-v    If a checkbox is n/a - please still include it but + a little note why
-☺ > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >  -->
+<!-- READ THE README BEFORE YOU CREATE A PULL REQUEST and ensure your PR is tagged properly -->
 
-## Description
-
-<!-- Add a description of the changes that this PR introduces and the files that
-are the most critical to review.
+## Context
+<!--
+    Describe
+    - the problem
+    - use cases
+    - possible solutions
+    - explanation of decisions made
+    And include links to relevant issues & references
 -->
 
-closes: #XXXX
+## Changes
+<!-- List the changes made -->

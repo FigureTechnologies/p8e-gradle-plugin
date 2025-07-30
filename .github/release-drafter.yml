@@ -1,0 +1,99 @@
+# yaml-language-server: $https://raw.githubusercontent.com/release-drafter/release-drafter/master/schema.json
+
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+tag-prefix: 'v'
+categories:
+  - title: '❌ BREAKING CHANGES'
+    labels:
+      - 'breaking'
+      - 'BREAKING'
+  - title: '🚀 Features & Enhancements'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+  - title: '🧰 Maintenance'
+    label: 'chore'
+  - title: '📖 Documentation'
+    labels:
+      - 'doc'
+      - 'docs'
+      - 'documentation'
+  - title: '📦 Dependency Updates'
+    label: 'dependencies'
+version-resolver:
+  major:
+    labels:
+      - 'major'
+      - 'breaking'
+      - 'BREAKING'
+  minor:
+    labels:
+      - 'minor'
+      - 'feature'
+      - 'enhancement'
+  patch:
+    labels:
+      - 'patch'
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+      - 'doc'
+      - 'docs'
+      - 'documentation'
+      - 'dependencies'
+      - 'chore'
+  default: minor
+autolabeler:
+  - label: 'BREAKING'
+    title:
+      - '/breaking/i'
+      - '/^[^:]*!:/'
+  - label: 'feature'
+    title:
+      - '/add/i'
+      - '/^feat/i'
+  - label: 'enhancement'
+    title:
+      - '/improve/i'
+  - label: 'bug'
+    branch:
+      - '/fix\/.+/'
+    title:
+      - '/fix/i'
+  - label: 'chore'
+    title:
+      - '/chore/i'
+      - '/clean/i'
+      - '/remove/i'
+  - label: 'docs'
+    title:
+      - '/docs/i'
+      - '/doc/i'
+  - label: 'dependencies'
+    title:
+      - '/update/i'
+      - '/upgrade/i'
+      - '/rev/i'
+      - '/\(deps?\)!?:/i'
+exclude-contributors:
+  - 'cloud-janitors-figure'
+  - 'figure-test-eng'
+  - 'renovate'
+  - 'renovate[bot]'
+  - 'figure-renovate'
+  - 'figure-renovate[bot]'
+replacers:
+  - search: '/\[(sc-|ch)(\d+)\]/gi'
+    replace: '[[sc-$2](https://app.shortcut.com/figure/story/$2)]'
+template: |
+  # What's Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION

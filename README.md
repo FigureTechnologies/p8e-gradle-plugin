@@ -3,27 +3,28 @@
 p8e gradle plugin allows for publishing p8e Contracts against a [p8e](https://github.com/provenance-io/p8e) environment. See [p8e docs](https://docs.provenance.io/p8e/overview) for relevant background and associated material.
 
 ## Status
-
-[![Latest Release][release-badge]][release-latest]
+[![Build][build-badge]][build-workflow]
+[![stability-beta][stability-badge]][stability-info]
 [![Code Coverage][code-coverage-badge]][code-coverage-report]
-[![License][license-badge]][license-url]
-[![LOC][loc-badge]][loc-report]
+[![LOC][loc-badge]][loc-url]
 
-[code-coverage-badge]: https://codecov.io/gh/provenance-io/p8e-gradle-plugin/branch/main/graph/badge.svg
-[code-coverage-report]: https://app.codecov.io/gh/provenance-io/p8e-gradle-plugin
+### Artifacts
+[![Latest Release][release-badge]][release-latest]
 
-[release-badge]: https://img.shields.io/github/v/tag/provenance-io/p8e-gradle-plugin.svg?sort=semver
-[release-latest]: https://github.com/provenance-io/p8e-gradle-plugin/releases/latest
-
-[license-badge]: https://img.shields.io/github/license/provenance-io/p8e-gradle-plugin.svg
-[license-url]: https://github.com/provenance-io/p8e-gradle-plugin/blob/main/LICENSE
-
-[loc-badge]: https://tokei.rs/b1/github/provenance-io/p8e-gradle-plugin
-[loc-report]: https://github.com/provenance-io/p8e-gradle-plugin
-
-NOTE: Versions prior to `0.5.0` are meant to bootstrap contracts with the legacy P8e Execution Environment.
-
-WARNING: Versions prior to `1.0.0` should be considered unstable and API changes expected.
+[build-badge]: https://img.shields.io/github/actions/workflow/status/FigureTechnologies/p8e-gradle-plugin/build.yml?branch=main&style=for-the-badge
+[build-workflow]: https://github.com/FigureTechnologies/p8e-gradle-plugin/actions/workflows/build.yml
+[stability-badge]: https://img.shields.io/badge/stability-pre--release-48c9b0.svg?style=for-the-badge
+[stability-info]: https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#release-candidate
+[code-coverage-badge]: https://img.shields.io/codecov/c/gh/FigureTechnologies/p8e-gradle-plugin/main?label=Codecov&style=for-the-badge
+[code-coverage-report]: https://app.codecov.io/gh/FigureTechnologies/p8e-gradle-plugin
+[release-badge]: https://img.shields.io/github/v/tag/FigureTechnologies/p8e-gradle-plugin.svg?sort=semver&style=for-the-badge
+[release-latest]: https://github.com/FigureTechnologies/p8e-gradle-plugin/releases/latest
+[plugin-publication-badge]: TODO
+[plugin-publication-url]: TODO
+[license-badge]: https://img.shields.io/github/license/FigureTechnologies/p8e-gradle-plugin.svg?style=for-the-badge
+[license-url]: https://github.com/FigureTechnologies/p8e-gradle-plugin/blob/main/LICENSE
+[loc-badge]: https://tokei.rs/b1/github/FigureTechnologies/p8e-gradle-plugin?style=for-the-badge
+[loc-url]: https://github.com/FigureTechnologies/p8e-gradle-plugin
 
 ## Overview
 
@@ -57,11 +58,15 @@ p8eJar - Builds jars for projects specified by "contractProject" and "protoProje
 
 ## Usage
 
-Below is a sample gradle block written in `groovy`.
+### Kotlin DSL
+
+_TODO: Add Kotlin DSL example_
+
+### Groovy
 
 ```groovy
 plugins {
-    id "io.provenance.p8e.p8e-publish" version "<see latest release>"
+    id "TO BE DETERMINED" version "<see latest release>" // TODO: Change ID
 }
 
 // This block specifies the configuration needed to connect to a p8e instance as well as the audience list
@@ -77,10 +82,10 @@ p8e {
     // Package locations that the ContractHash and ProtoHash source files will be written to.
     contractHashPackage = "io.p8e.contracts.example"
     protoHashPackage = "io.p8e.proto.example"
-    
+
     // Specifies the root packages to search in when building contractHash and protoHash classes. Defaults to ["io", "com"]
     includePackages = ["io", "com"]
-    
+
     // specifies all of the p8e locations that this plugin will bootstrap to.
     locations = [
         local: new io.provenance.p8e.plugin.P8eLocationExtension(
