@@ -15,7 +15,8 @@ jobs:
     name: Build & Publish Jar
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Get version
         run: |
@@ -47,6 +48,9 @@ jobs:
             wrapper
 
       - name: Build with Gradle
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean build jacocoTestReport --refresh-dependencies -Pversion=$VERSION
 
           # - name: Run Integration Tests with Gradle
@@ -75,9 +79,3 @@ jobs:
             -Psigning.keyId=B7D30ABE
             -Psigning.password="${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
             -Psigning.secretKeyRingFile=$GITHUB_WORKSPACE/release.gpg
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.2.2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: build/reports/jacoco/test/*.xml

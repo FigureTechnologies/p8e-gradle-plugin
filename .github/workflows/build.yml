@@ -20,7 +20,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -40,6 +41,9 @@ jobs:
             wrapper
 
       - name: Build with Gradle
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew build jacocoTestReport
 
       # TODO: Investigate state of integration tests
@@ -49,7 +53,7 @@ jobs:
       #     API_URL: ${{ secrets.INTEGRATION_TEST_API_URL }}
       #     PRIVATE_KEY: ${{ secrets.INTEGRATION_TEST_PRIVATE_KEY }}
 
-      - name: Publish Test Results
+      - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ !cancelled() }}
         with:
@@ -59,5 +63,6 @@ jobs:
 
       - name: Upload code coverage report
         uses: codecov/codecov-action@v5
+        if: ${{ !cancelled() }}
         with:
           directory: build/reports/jacoco/test

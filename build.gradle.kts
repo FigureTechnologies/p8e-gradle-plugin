@@ -9,7 +9,7 @@ version = (project.property("version") as String?)
 
 plugins {
     id("com.gradle.plugin-publish") version "1.2.1"
-    jacoco
+    jacoco // TODO: Replace with kover?
     kotlin("jvm") version "1.9.10"
 }
 
@@ -116,15 +116,15 @@ tasks.jacocoTestReport {
 
 gradlePlugin {
     testSourceSets(integrationTest)
-    website = "https://github.com/provenance-io/p8e-gradle-plugin"
-    vcsUrl = "https://github.com/provenance-io/p8e-gradle-plugin.git"
+    website = "https://github.com/FigureTechnologies/p8e-gradle-plugin"
+    vcsUrl = "https://github.com/FigureTechnologies/p8e-gradle-plugin.git"
 
     plugins {
         create("p8ePlugin") {
-            id = "io.provenance.p8e.p8e-publish"
+            id = "TO BE DETERMINED" // TODO: Change ID
             displayName = "p8e gradle plugin"
             description = "Publishes P8eContract classes to Provenance P8e execution environments"
-            implementationClass = "io.provenance.p8e.plugin.ContractPlugin"
+            implementationClass = "io.provenance.p8e.plugin.ContractPlugin" // TODO: Change package root name
             tags = listOf("provenance", "provenance.io", "p8e", "bootstrap", "publish")
         }
     }
