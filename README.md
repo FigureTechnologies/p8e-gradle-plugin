@@ -66,7 +66,7 @@ _TODO: Add Kotlin DSL example_
 
 ```groovy
 plugins {
-    id "TO BE DETERMINED" version "<see latest release>" // TODO: Change ID
+    id "com.figure.p8e.publish" version "<see latest release>"
 }
 
 // This block specifies the configuration needed to connect to a p8e instance as well as the audience list
@@ -88,7 +88,7 @@ p8e {
 
     // specifies all of the p8e locations that this plugin will bootstrap to.
     locations = [
-        local: new io.provenance.p8e.plugin.P8eLocationExtension(
+        local: new com.figure.p8e.plugin.P8eLocationExtension(
             osUrl: System.getenv('OS_GRPC_URL'),
             provenanceUrl: System.getenv('PROVENANCE_GRPC_URL'),
             chainId: System.getenv('CHAIN_ID'),
@@ -100,19 +100,19 @@ p8e {
             ],
 
             audience: [
-                local1: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local1: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A41046C57E9E25101D5E553AE003E2F79025E389B51495607C796B4E95C0A94001FBC24D84CD0780819612529B803E8AD0A397F474C965D957D33DD64E642B756FBC4"
                 ),
-                local2: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local2: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A4104D630032378D56229DD20D08DBCC6D31F44A07D98175966F5D32CD2189FD748831FCB49266124362E56CC1FAF2AA0D3F362BF84CACBC1C0C74945041EB7327D54"
                 ),
-                local3: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local3: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A4104CD5F4ACFFE72D323CCCB2D784847089BBD80EC6D4F68608773E55B3FEADC812E4E2D7C4C647C8C30352141D2926130D10DFC28ACA5CA8A33B7BD7A09C77072CE"
                 ),
-                local4: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local4: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A41045E4B322ED16CD22465433B0427A4366B9695D7E15DD798526F703035848ACC8D2D002C1F25190454C9B61AB7B243E31E83BA2B48B8A4441F922A08AC3D0A3268"
                 ),
-                local5: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local5: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A4104A37653602DA20D27936AF541084869B2F751953CB0F0D25D320788EDA54FB4BC9FB96A281BFFD97E64B749D78C85871A8E14AFD48048537E45E16F3D2FDDB44B"
                 )
             ]

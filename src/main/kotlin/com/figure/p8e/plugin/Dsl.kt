@@ -1,4 +1,4 @@
-package io.provenance.p8e.plugin
+package com.figure.p8e.plugin
 
 // TODO implement type safe builders
 // https://kotlinlang.org/docs/type-safe-builders.html#how-it-works

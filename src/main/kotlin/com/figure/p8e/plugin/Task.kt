@@ -1,4 +1,4 @@
-package io.provenance.p8e.plugin
+package com.figure.p8e.plugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction

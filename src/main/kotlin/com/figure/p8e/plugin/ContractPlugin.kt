@@ -1,4 +1,4 @@
-package io.provenance.p8e.plugin
+package com.figure.p8e.plugin
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.Plugin
@@ -19,7 +19,7 @@ class ContractPlugin : Plugin<Project> {
 
         project.plugins.apply("maven-publish")
         project.subprojects.forEach {
-            it.plugins.apply("com.github.johnrengelman.shadow")
+            it.plugins.apply("com.gradleup.shadow")
 
             it.tasks.withType(AbstractArchiveTask::class.java).configureEach { task ->
                 task.isPreserveFileTimestamps = false
@@ -28,6 +28,7 @@ class ContractPlugin : Plugin<Project> {
 
             it.tasks.withType(ShadowJar::class.java) { task ->
                 task.minimize()
+                task.archiveClassifier.set("")
             }
         }
 

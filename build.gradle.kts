@@ -1,8 +1,9 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-group = "io.provenance.p8e.p8e-publish" // TODO: Change
+group = "com.figure.p8e.publish"
 version = (project.property("version") as String?)
     ?.takeUnless { it.isBlank() || it == "unspecified" }
     ?: "1.0-SNAPSHOT"
@@ -11,6 +12,7 @@ plugins {
     id("com.gradle.plugin-publish") version "1.2.1"
     jacoco // TODO: Replace with kover?
     kotlin("jvm") version "1.9.10"
+    alias(libs.plugins.shadow)
 }
 
 repositories {
@@ -56,7 +58,8 @@ dependencies {
     ).forEach(::implementation)
 
     listOf(
-        libs.bundles.kotest
+        libs.bundles.kotest,
+        gradleTestKit(),
     ).forEach(::testImplementation)
 
     configurations["integrationTestImplementation"](libs.kotest.runner4)
@@ -71,6 +74,10 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "17"
     }
+}
+
+tasks.withType<ShadowJar> {
+    archiveClassifier.set("")
 }
 
 tasks.withType<Test> {
@@ -121,11 +128,11 @@ gradlePlugin {
 
     plugins {
         create("p8ePlugin") {
-            id = "TO BE DETERMINED" // TODO: Change ID
+            id = "com.figure.p8e.publish"
             displayName = "p8e gradle plugin"
             description = "Publishes P8eContract classes to Provenance P8e execution environments"
-            implementationClass = "io.provenance.p8e.plugin.ContractPlugin" // TODO: Change package root name
-            tags = listOf("provenance", "provenance.io", "p8e", "bootstrap", "publish")
+            implementationClass = "com.figure.p8e.plugin.ContractPlugin"
+            tags = listOf("provenance", "provenance.io", "figure", "figuretechnologies", "p8e", "bootstrap", "publish")
         }
     }
 }
