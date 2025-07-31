@@ -19,7 +19,7 @@ class ContractPluginTest : WordSpec({
             .build()
             .also {
                 it.pluginManager.apply("java")
-                it.tasks.create("shadowJar")
+                it.tasks.register("shadowJar")
             }
         ProjectBuilder.builder()
             .withName("proto")

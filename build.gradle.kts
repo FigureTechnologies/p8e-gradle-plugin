@@ -53,9 +53,16 @@ dependencies {
         libs.shadow,
 
         // added for copied StdSignature functionality
-        libs.bundles.kethereum,
         libs.bundles.jackson,
     ).forEach(::implementation)
+
+    listOf(
+        libs.bundles.kethereum,
+    ).forEach {
+        implementation(it) {
+            exclude(group = "org.bouncycastle", module = "bcprov-jdk15to18")
+        }
+    }
 
     listOf(
         libs.bundles.kotest,
@@ -78,6 +85,7 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<ShadowJar> {
     archiveClassifier.set("")
+    isZip64 = true
 }
 
 tasks.withType<Test> {

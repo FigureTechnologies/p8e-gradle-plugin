@@ -29,6 +29,7 @@ class ContractPlugin : Plugin<Project> {
             it.tasks.withType(ShadowJar::class.java) { task ->
                 task.minimize()
                 task.archiveClassifier.set("")
+                task.isZip64 = true
             }
         }
 
