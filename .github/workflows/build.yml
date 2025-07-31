@@ -44,7 +44,7 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew build jacocoTestReport
+        run: ./gradlew build
 
       # TODO: Investigate state of integration tests
       # - name: Run Integration Tests with Gradle
@@ -60,9 +60,3 @@ jobs:
           junit_files: "**/build/test-results/**/*.xml"
           large_files: true
           report_individual_runs: true
-
-      - name: Upload code coverage report
-        uses: codecov/codecov-action@v5
-        if: ${{ !cancelled() }}
-        with:
-          directory: build/reports/jacoco/test
