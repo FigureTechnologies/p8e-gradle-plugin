@@ -1,0 +1,62 @@
+name: Build
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - ready_for_review
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: gradle-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: zulu
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
+          cache-cleanup: on-success
+          gradle-home-cache-includes: |
+            caches
+            notifications
+            jdks
+            wrapper
+
+      - name: Build with Gradle
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew build
+
+      # TODO: Investigate state of integration tests
+      # - name: Run Integration Tests with Gradle
+      #   run: ./gradlew integrationTest -Pversion=$VERSION
+      #   env:
+      #     API_URL: ${{ secrets.INTEGRATION_TEST_API_URL }}
+      #     PRIVATE_KEY: ${{ secrets.INTEGRATION_TEST_PRIVATE_KEY }}
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: ${{ !cancelled() }}
+        with:
+          junit_files: "**/build/test-results/**/*.xml"
+          large_files: true
+          report_individual_runs: true

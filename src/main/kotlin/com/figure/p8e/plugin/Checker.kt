@@ -1,4 +1,4 @@
-package io.provenance.p8e.plugin
+package com.figure.p8e.plugin
 
 import io.provenance.scope.contract.annotations.Function
 import io.provenance.scope.contract.annotations.ScopeSpecification

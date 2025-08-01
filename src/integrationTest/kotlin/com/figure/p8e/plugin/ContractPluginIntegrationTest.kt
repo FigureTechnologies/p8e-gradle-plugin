@@ -1,4 +1,4 @@
-package io.provenance.p8e.plugin
+package com.figure.p8e.plugin
 
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.WordSpec

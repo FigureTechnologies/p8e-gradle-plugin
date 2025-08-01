@@ -1,4 +1,4 @@
-package io.provenance.p8e.plugin
+package com.figure.p8e.plugin
 
 import com.google.protobuf.Any
 import com.google.protobuf.Message

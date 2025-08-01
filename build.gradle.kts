@@ -1,16 +1,18 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-group = "io.provenance.p8e.p8e-publish"
+group = "com.figure.p8e.publish"
 version = (project.property("version") as String?)
     ?.takeUnless { it.isBlank() || it == "unspecified" }
     ?: "1.0-SNAPSHOT"
 
 plugins {
     id("com.gradle.plugin-publish") version "1.2.1"
-    jacoco
+    jacoco // TODO: Replace with kover?
     kotlin("jvm") version "1.9.10"
+    alias(libs.plugins.shadow)
 }
 
 repositories {
@@ -51,12 +53,20 @@ dependencies {
         libs.shadow,
 
         // added for copied StdSignature functionality
-        libs.bundles.kethereum,
         libs.bundles.jackson,
     ).forEach(::implementation)
 
     listOf(
-        libs.bundles.kotest
+        libs.bundles.kethereum,
+    ).forEach {
+        implementation(it) {
+            exclude(group = "org.bouncycastle", module = "bcprov-jdk15to18")
+        }
+    }
+
+    listOf(
+        libs.bundles.kotest,
+        gradleTestKit(),
     ).forEach(::testImplementation)
 
     configurations["integrationTestImplementation"](libs.kotest.runner4)
@@ -71,6 +81,11 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "17"
     }
+}
+
+tasks.withType<ShadowJar> {
+    archiveClassifier.set("")
+    isZip64 = true
 }
 
 tasks.withType<Test> {
@@ -116,16 +131,16 @@ tasks.jacocoTestReport {
 
 gradlePlugin {
     testSourceSets(integrationTest)
-    website = "https://github.com/provenance-io/p8e-gradle-plugin"
-    vcsUrl = "https://github.com/provenance-io/p8e-gradle-plugin.git"
+    website = "https://github.com/FigureTechnologies/p8e-gradle-plugin"
+    vcsUrl = "https://github.com/FigureTechnologies/p8e-gradle-plugin.git"
 
     plugins {
         create("p8ePlugin") {
-            id = "io.provenance.p8e.p8e-publish"
+            id = "com.figure.p8e.publish"
             displayName = "p8e gradle plugin"
             description = "Publishes P8eContract classes to Provenance P8e execution environments"
-            implementationClass = "io.provenance.p8e.plugin.ContractPlugin"
-            tags = listOf("provenance", "provenance.io", "p8e", "bootstrap", "publish")
+            implementationClass = "com.figure.p8e.plugin.ContractPlugin"
+            tags = listOf("provenance", "provenance.io", "figure", "figuretechnologies", "p8e", "bootstrap", "publish")
         }
     }
 }

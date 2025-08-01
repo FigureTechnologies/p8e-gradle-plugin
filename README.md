@@ -3,27 +3,28 @@
 p8e gradle plugin allows for publishing p8e Contracts against a [p8e](https://github.com/provenance-io/p8e) environment. See [p8e docs](https://docs.provenance.io/p8e/overview) for relevant background and associated material.
 
 ## Status
-
-[![Latest Release][release-badge]][release-latest]
+[![Build][build-badge]][build-workflow]
+[![stability-beta][stability-badge]][stability-info]
 [![Code Coverage][code-coverage-badge]][code-coverage-report]
-[![License][license-badge]][license-url]
-[![LOC][loc-badge]][loc-report]
+[![LOC][loc-badge]][loc-url]
 
-[code-coverage-badge]: https://codecov.io/gh/provenance-io/p8e-gradle-plugin/branch/main/graph/badge.svg
-[code-coverage-report]: https://app.codecov.io/gh/provenance-io/p8e-gradle-plugin
+### Artifacts
+[![Latest Release][release-badge]][release-latest]
 
-[release-badge]: https://img.shields.io/github/v/tag/provenance-io/p8e-gradle-plugin.svg?sort=semver
-[release-latest]: https://github.com/provenance-io/p8e-gradle-plugin/releases/latest
-
-[license-badge]: https://img.shields.io/github/license/provenance-io/p8e-gradle-plugin.svg
-[license-url]: https://github.com/provenance-io/p8e-gradle-plugin/blob/main/LICENSE
-
-[loc-badge]: https://tokei.rs/b1/github/provenance-io/p8e-gradle-plugin
-[loc-report]: https://github.com/provenance-io/p8e-gradle-plugin
-
-NOTE: Versions prior to `0.5.0` are meant to bootstrap contracts with the legacy P8e Execution Environment.
-
-WARNING: Versions prior to `1.0.0` should be considered unstable and API changes expected.
+[build-badge]: https://img.shields.io/github/actions/workflow/status/FigureTechnologies/p8e-gradle-plugin/build.yml?branch=main&style=for-the-badge
+[build-workflow]: https://github.com/FigureTechnologies/p8e-gradle-plugin/actions/workflows/build.yml
+[stability-badge]: https://img.shields.io/badge/stability-pre--release-48c9b0.svg?style=for-the-badge
+[stability-info]: https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#release-candidate
+[code-coverage-badge]: https://img.shields.io/codecov/c/gh/FigureTechnologies/p8e-gradle-plugin/main?label=Codecov&style=for-the-badge
+[code-coverage-report]: https://app.codecov.io/gh/FigureTechnologies/p8e-gradle-plugin
+[release-badge]: https://img.shields.io/github/v/tag/FigureTechnologies/p8e-gradle-plugin.svg?sort=semver&style=for-the-badge
+[release-latest]: https://github.com/FigureTechnologies/p8e-gradle-plugin/releases/latest
+[plugin-publication-badge]: TODO
+[plugin-publication-url]: TODO
+[license-badge]: https://img.shields.io/github/license/FigureTechnologies/p8e-gradle-plugin.svg?style=for-the-badge
+[license-url]: https://github.com/FigureTechnologies/p8e-gradle-plugin/blob/main/LICENSE
+[loc-badge]: https://tokei.rs/b1/github/FigureTechnologies/p8e-gradle-plugin?style=for-the-badge
+[loc-url]: https://github.com/FigureTechnologies/p8e-gradle-plugin
 
 ## Overview
 
@@ -57,11 +58,15 @@ p8eJar - Builds jars for projects specified by "contractProject" and "protoProje
 
 ## Usage
 
-Below is a sample gradle block written in `groovy`.
+### Kotlin DSL
+
+_TODO: Add Kotlin DSL example_
+
+### Groovy
 
 ```groovy
 plugins {
-    id "io.provenance.p8e.p8e-publish" version "<see latest release>"
+    id "com.figure.p8e.publish" version "<see latest release>"
 }
 
 // This block specifies the configuration needed to connect to a p8e instance as well as the audience list
@@ -77,13 +82,13 @@ p8e {
     // Package locations that the ContractHash and ProtoHash source files will be written to.
     contractHashPackage = "io.p8e.contracts.example"
     protoHashPackage = "io.p8e.proto.example"
-    
+
     // Specifies the root packages to search in when building contractHash and protoHash classes. Defaults to ["io", "com"]
     includePackages = ["io", "com"]
-    
+
     // specifies all of the p8e locations that this plugin will bootstrap to.
     locations = [
-        local: new io.provenance.p8e.plugin.P8eLocationExtension(
+        local: new com.figure.p8e.plugin.P8eLocationExtension(
             osUrl: System.getenv('OS_GRPC_URL'),
             provenanceUrl: System.getenv('PROVENANCE_GRPC_URL'),
             chainId: System.getenv('CHAIN_ID'),
@@ -95,19 +100,19 @@ p8e {
             ],
 
             audience: [
-                local1: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local1: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A41046C57E9E25101D5E553AE003E2F79025E389B51495607C796B4E95C0A94001FBC24D84CD0780819612529B803E8AD0A397F474C965D957D33DD64E642B756FBC4"
                 ),
-                local2: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local2: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A4104D630032378D56229DD20D08DBCC6D31F44A07D98175966F5D32CD2189FD748831FCB49266124362E56CC1FAF2AA0D3F362BF84CACBC1C0C74945041EB7327D54"
                 ),
-                local3: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local3: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A4104CD5F4ACFFE72D323CCCB2D784847089BBD80EC6D4F68608773E55B3FEADC812E4E2D7C4C647C8C30352141D2926130D10DFC28ACA5CA8A33B7BD7A09C77072CE"
                 ),
-                local4: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local4: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A41045E4B322ED16CD22465433B0427A4366B9695D7E15DD798526F703035848ACC8D2D002C1F25190454C9B61AB7B243E31E83BA2B48B8A4441F922A08AC3D0A3268"
                 ),
-                local5: new io.provenance.p8e.plugin.P8ePartyExtension(
+                local5: new com.figure.p8e.plugin.P8ePartyExtension(
                     publicKey: "0A4104A37653602DA20D27936AF541084869B2F751953CB0F0D25D320788EDA54FB4BC9FB96A281BFFD97E64B749D78C85871A8E14AFD48048537E45E16F3D2FDDB44B"
                 )
             ]

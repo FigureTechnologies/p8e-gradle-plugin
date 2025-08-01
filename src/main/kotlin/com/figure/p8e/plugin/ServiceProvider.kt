@@ -1,4 +1,4 @@
-package io.provenance.p8e.plugin
+package com.figure.p8e.plugin
 
 import io.provenance.scope.contract.spec.P8eContract
 import org.apache.commons.io.FileUtils
@@ -101,11 +101,11 @@ class ContractHash$uid : ContractHash {
                     .map { "\"$it\" to true" }
                     .joinToString(separator = ", ", prefix = "mapOf(", postfix = ")")
             }
-    
+
     override fun getClasses(): Map<String, Boolean> {
         return classes
     }
-    
+
     override fun getUuid(): String {
         return "$uid"
     }
@@ -132,12 +132,12 @@ public class ContractHash$uid implements ContractHash {
                 .joinToString(separator = "\n")
         }
     }};
-    
+
     @Override
     public Map<String, Boolean> getClasses() {
         return classes;
     }
-    
+
     @Override
     public String getUuid() {
         return "$uid";
@@ -202,7 +202,7 @@ class ProtoHash$uid : ProtoHash {
     override fun getClasses(): Map<String, Boolean> {
         return classes
     }
-    
+
     override fun getUuid(): String {
         return "$uid"
     }
@@ -234,7 +234,7 @@ public class ProtoHash$uid implements ProtoHash {
     public Map<String, Boolean> getClasses() {
         return classes;
     }
-    
+
     @Override
     public String getUuid() {
         return "$uid";
