@@ -48,17 +48,7 @@ jobs:
             wrapper
 
       - name: Build with Gradle
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean build --refresh-dependencies -Pversion=$VERSION
-
-          # - name: Run Integration Tests with Gradle
-          #   run: ./gradlew integrationTest -Pversion=$VERSION
-          #   env:
-          #     API_URL: ${{ secrets.INTEGRATION_TEST_API_URL }}
-          #     PRIVATE_KEY: ${{ secrets.INTEGRATION_TEST_PRIVATE_KEY }}
-          #   if: github.event_name == 'release'
 
       - name: Install gpg secret key
         run: |
