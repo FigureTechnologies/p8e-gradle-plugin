@@ -48,17 +48,7 @@ jobs:
             wrapper
 
       - name: Build with Gradle
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean build --refresh-dependencies -Pversion=$VERSION
-
-          # - name: Run Integration Tests with Gradle
-          #   run: ./gradlew integrationTest -Pversion=$VERSION
-          #   env:
-          #     API_URL: ${{ secrets.INTEGRATION_TEST_API_URL }}
-          #     PRIVATE_KEY: ${{ secrets.INTEGRATION_TEST_PRIVATE_KEY }}
-          #   if: github.event_name == 'release'
 
       - name: Install gpg secret key
         run: |
@@ -70,9 +60,9 @@ jobs:
       - name: Publish to Gradle Plugin Repository
         run: >-
           ./gradlew publishPlugins
-            -Pversion=$VERSION
-            -Pgradle.publish.key="${{ secrets.OSS_GRADLE_PUBLISH_KEY }}"
-            -Pgradle.publish.secret="${{ secrets.OSS_GRADLE_PUBLISH_SECRET }}"
-            -Psigning.keyId="${{ secrets.OSSRH_GPG_SECRET_KEY_ID }}"
-            -Psigning.password="${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
-            -Psigning.secretKeyRingFile="$GITHUB_WORKSPACE/release.gpg"
+          -Pversion="$VERSION"
+          -Pgradle.publish.key="${{ secrets.OSS_GRADLE_PUBLISH_KEY }}"
+          -Pgradle.publish.secret="${{ secrets.OSS_GRADLE_PUBLISH_SECRET }}"
+          -Psigning.keyId="${{ secrets.OSSRH_GPG_SECRET_KEY_ID }}"
+          -Psigning.password="${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
+          -Psigning.secretKeyRingFile="$GITHUB_WORKSPACE/release.gpg"
