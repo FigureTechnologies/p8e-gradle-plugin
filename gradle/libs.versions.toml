@@ -2,9 +2,9 @@
 kotlin = "1.9.10"
 reflections = "0.9.10"
 provenance-scope-sdk = "0.7.0"
-provenance-client = "2.4.0"
-provenance-protobuf = "1.5.0"
-figure-hdwallet = "0.4.3"
+provenance-client = "2.5.2"
+provenance-protobuf = "1.24.0"
+figure-hdwallet = "0.4.4"
 grpc = "1.58.0"
 commons = "2.14.0"
 protobuf = "3.24.4"
@@ -27,7 +27,7 @@ reflections = { module = "org.reflections:reflections", version.ref = "reflectio
 provenance-sdk = { module = "io.provenance.scope:sdk", version.ref = "provenance-scope-sdk" }
 provenance-scope = { module = "io.provenance.scope:util", version.ref = "provenance-scope-sdk" }
 provenance-client = { module = "io.provenance.client:pb-grpc-client-kotlin", version.ref = "provenance-client" }
-provenance-protobuf = { module = "io.provenance.protobuf:pb-proto-java", version.ref = "provenance-protobuf" }
+provenance-protobuf = { group = "io.provenance", name = "proto-kotlin", version.ref = "provenance-protobuf" }
 
 figure-hdwallet = { module = "tech.figure.hdwallet:hdwallet", version.ref = "figure-hdwallet" }
 
