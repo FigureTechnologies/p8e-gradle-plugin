@@ -1,6 +1,11 @@
 # p8e-gradle-plugin
 
-p8e gradle plugin allows for publishing p8e Contracts against a [p8e](https://github.com/provenance-io/p8e) environment. See [p8e docs](https://docs.provenance.io/p8e/overview) for relevant background and associated material.
+A Gradle plugin to facilitate publishing "p8e"/"BlockVault" contracts against a [p8e-scope-sdk](https://github.com/provenance-io/p8e-scope-sdk/) environment.
+See [Provenance documentation](https://developer.provenance.io/docs/pb/p8e/overview/) for relevant background and associated material.
+
+> [!NOTE]
+> This repository was forked from the unmaintained [provenance-io/p8e-gradle-plugin](https://github.com/provenance-io/p8e-gradle-plugin) due to need for additional features and enhancements that are originally specific to Figure but may still suit other use cases.
+
 
 ## Status
 [![Build][build-badge]][build-workflow]
@@ -28,22 +33,21 @@ p8e gradle plugin allows for publishing p8e Contracts against a [p8e](https://gi
 
 ## Overview
 
-Having an understanding of the [Provenance Metadata module](https://docs.provenance.io/modules/metadata-module) is strongly recommended.
+Having an understanding of the [Provenance Metadata module](https://developer.provenance.io/docs/sdk/metadata/) is strongly recommended.
 
-In order to execute contracts with the [Provenance Scope SDK](https://github.com/provenance-io/p8e-scope-sdk), the contracts must be published into
-your execution environment. This gradle plugin provides a set of tasks in order to accomplish that. Publishing contracts performs the following
-high level actions in order to allow contracts to be executed:
+In order to execute contracts with the [Provenance Scope SDK](https://github.com/provenance-io/p8e-scope-sdk), the contracts must be published into your execution environment.
+This Gradle plugin provides a set of tasks in order to accomplish that.
+Publishing contracts performs the following high-level actions in order to allow contracts to be executed:
 
-- An uberjar is built which contains a set of contracts and all associated protobuf messages included in them. This uberjar is persisted to
-p8e's encrypted [object-store](https://github.com/provenance-io/object-store). This allows p8e to later pull it and make use of a
+- An uberjar is built which contains a set of contracts and all associated protobuf messages included in them.
+This uberjar is persisted to an encrypted [object store](https://github.com/provenance-io/object-store).
+This allows BlockVault to later pull it and make use of a
 [Class Loader](https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html) to load it at runtime.
-- A concrete implementation of [ContractHash](https://github.com/provenance-io/p8e-scope-sdk/blob/main/contract-base/src/main/kotlin/io/provenance/scope/contract/contracts/ContractHash.kt)
-is generated and stored alongside your source code. Similarly, an implementation of
-[ProtoHash](https://github.com/provenance-io/p8e-scope-sdk/blob/main/contract-proto/src/main/kotlin/io/provenance/scope/contract/proto/ProtoHash.kt)
-is also generated. These classes will be built into the jars that are depended on by your application that will
-execute contracts. These classes provide a mapping from P8eContracts and their associated protobuf messages to the hash of the
-uberjar they are contained within. Ultimately, the sdk will make use of these classes via the
-[service provider](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html) facility.
+- A concrete implementation of [ContractHash](https://github.com/provenance-io/p8e-scope-sdk/blob/main/contract-base/src/main/kotlin/io/provenance/scope/contract/contracts/ContractHash.kt) is generated and stored alongside your source code.
+Similarly, an implementation of [ProtoHash](https://github.com/provenance-io/p8e-scope-sdk/blob/main/contract-proto/src/main/kotlin/io/provenance/scope/contract/proto/ProtoHash.kt) is also generated.
+These classes will be built into the jars that are depended on by your application that will execute contracts.
+These classes provide a mapping from P8eContracts and their associated protobuf messages to the hash of the uberjar they are contained within.
+Ultimately, the sdk will make use of these classes via the [service provider](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html) facility.
 
 ## Tasks
 
@@ -57,10 +61,6 @@ p8eJar - Builds jars for projects specified by "contractProject" and "protoProje
 ```
 
 ## Usage
-
-### Kotlin DSL
-
-_TODO: Add Kotlin DSL example_
 
 ### Groovy
 
@@ -118,5 +118,39 @@ p8e {
             ]
         )
     ]
+}
+```
+
+### Kotlin DSL
+
+```kotlin
+p8e {
+    language = "kt"
+    contractHashPackage = "com.figure.los.contract"
+    protoHashPackage = "com.figure.los.contract"
+    contractProject = "contracts"
+    protoProject = "protos"
+    includePackages = arrayOf("io", "com")
+    locations = mapOf(
+        "production" to P8eLocationExtension().apply {
+            osUrl = System.getenv("OS_GRPC_URL")
+            provenanceUrl = System.getenv("PROVENANCE_GRPC_URL")
+            encryptionPrivateKey = System.getenv("ENCRYPTION_PRIVATE_KEY")
+            signingPrivateKey = System.getenv("SIGNING_PRIVATE_KEY")
+            chainId = "pio-mainnet-1"
+            mainNet = true
+            txFeeAdjustment = "2.0"
+            txBatchSize = "5"
+            provenanceQueryTimeoutSeconds = "20"
+            osHeaders = mapOf(
+                "apikey" to System.getenv("OBJECT_STORE_APIKEY")
+            )
+            audience = mapOf(
+                "my-service" to P8ePartyExtension().apply {
+                    publicKey = "0A41046C57E9E25101D5E553AE003E2F79025E389B51495607C796B4E95C0A94001FBC24D84CD0780819612529B803E8AD0A397F474C965D957D33DD64E642B756FBC4"
+                },
+            )
+        },
+    )
 }
 ```
