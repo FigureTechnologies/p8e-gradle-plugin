@@ -2,16 +2,12 @@ package com.figure.p8e.plugin
 
 import com.google.protobuf.Any
 import com.google.protobuf.Message
-import cosmos.base.v1beta1.CoinOuterClass
 import cosmos.tx.v1beta1.ServiceOuterClass.BroadcastMode
 import cosmos.tx.v1beta1.TxOuterClass.TxBody
 import io.grpc.ManagedChannel
-import io.provenance.client.common.extensions.toCoin
-import io.provenance.client.common.gas.prices.constGasPrice
 import io.provenance.client.grpc.BaseReqSigner
 import io.provenance.client.grpc.GasEstimationMethod
 import io.provenance.client.grpc.PbClient
-import io.provenance.client.grpc.floatingGasPrices
 import io.provenance.metadata.v1.ContractSpecificationRequest
 import io.provenance.metadata.v1.ContractSpecificationResponse
 import io.provenance.metadata.v1.ScopeSpecificationRequest
@@ -29,13 +25,7 @@ class ProvenanceClient(channel: ManagedChannel, val logger: Logger, val location
     private val inner = PbClient(
         location.chainId!!,
         URI(location.provenanceUrl!!),
-        floatingGasPrices(
-            GasEstimationMethod.MSG_FEE_CALCULATION,
-            constGasPrice(
-                location.txGasPrice?.takeIf{ gasPriceString -> gasPriceString.isNotBlank() }?.toDouble()?.toCoin("nhash")?.also { logger.info("Using provided gas price of ${it.amount}${it.denom}") } ?:
-                CoinOuterClass.Coin.newBuilder().setAmount("19050").setDenom("nhash").build().also { logger.info("Using default gas price of ${it.amount}${it.denom}") }
-            )
-        ),
+        GasEstimationMethod.MSG_FEE_CALCULATION,
         channel = channel
     )
     private val queryTimeoutSeconds = location.provenanceQueryTimeoutSeconds.toLong()
