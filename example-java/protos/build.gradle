@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        protobuf_version = '3.6.+'
+        protobuf_version = '3.6.1'
     }
 
     repositories {
