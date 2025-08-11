@@ -13,7 +13,7 @@ shadow = "9.0.0-rc2"
 kethereum = "0.86.0"
 jackson = "2.15.3"
 kotest = "5.7.2"
-kotest-4 = "4.4.+"
+kotest-4 = "4.4.3"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
