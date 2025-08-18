@@ -11,7 +11,7 @@ version = (project.property("version") as String?)
 plugins {
     id("com.gradle.plugin-publish") version "1.2.1"
     jacoco // TODO: Replace with kover?
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.25"
     alias(libs.plugins.shadow)
 }
 
