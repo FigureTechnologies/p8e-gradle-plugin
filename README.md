@@ -140,6 +140,7 @@ p8e {
             chainId = "pio-mainnet-1"
             mainNet = true
             txFeeAdjustment = "2.0"
+            fixedGasLimit = 60_000_000
             txBatchSize = "5"
             provenanceQueryTimeoutSeconds = "20"
             osHeaders = mapOf(
