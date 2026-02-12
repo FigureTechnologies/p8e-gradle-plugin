@@ -24,7 +24,7 @@ fun Collection<Message>.toTxBody(): TxBody = TxBody.newBuilder()
     .build()
 fun Message.toAny(typeUrlPrefix: String = "") = Any.pack(this, typeUrlPrefix)
 
-val doubledTransactionGasEstimator: GasEstimator =
+fun fixedLimitTransactionGasEstimator(location: P8eLocationExtension): GasEstimator =
     { tx: TxOuterClass.Tx, adjustment: Double ->
         val estimate = msgFeeClient.calculateTxFees(
             CalculateTxFeesRequest.newBuilder()
@@ -32,14 +32,22 @@ val doubledTransactionGasEstimator: GasEstimator =
                 .setGasAdjustment(adjustment.toFloat())
                 .build()
         )
-        GasEstimate(2 * estimate.estimatedGas, estimate.totalFeesList, estimate.additionalFeesList)
+        GasEstimate(
+            limit = if (location.fixedGasLimit > 0) {
+                location.fixedGasLimit
+            } else {
+                estimate.estimatedGas
+            },
+            feesCalculated = estimate.totalFeesList,
+            msgFees = estimate.additionalFeesList
+        )
     }
 
 class ProvenanceClient(channel: ManagedChannel, val logger: Logger, val location: P8eLocationExtension) {
     private val inner = PbClient(
         location.chainId!!,
         URI(location.provenanceUrl!!),
-        doubledTransactionGasEstimator,
+        fixedLimitTransactionGasEstimator(location),
         channel = channel
     )
     private val queryTimeoutSeconds = location.provenanceQueryTimeoutSeconds.toLong()
