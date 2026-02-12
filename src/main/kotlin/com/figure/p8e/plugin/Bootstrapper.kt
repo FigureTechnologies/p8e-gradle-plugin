@@ -2,7 +2,6 @@ package com.figure.p8e.plugin
 
 import com.google.protobuf.ByteString
 import com.google.protobuf.Message
-import io.grpc.ManagedChannelBuilder
 import io.provenance.client.grpc.BaseReqSigner
 import io.provenance.client.grpc.ChannelOpts
 import io.provenance.client.grpc.createChannel
@@ -127,7 +126,7 @@ internal class Bootstrapper(
 
         var errored = false
 
-        extension.locations.forEach { name, location ->
+        extension.locations.forEach { (name, location) ->
             project.logger.info("Publishing contracts - location: $name object-store url: ${location.osUrl} provenance url: ${location.provenanceUrl}")
 
             val config = ClientConfig(

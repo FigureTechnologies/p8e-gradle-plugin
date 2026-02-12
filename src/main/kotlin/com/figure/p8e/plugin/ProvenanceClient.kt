@@ -3,15 +3,18 @@ package com.figure.p8e.plugin
 import com.google.protobuf.Any
 import com.google.protobuf.Message
 import cosmos.tx.v1beta1.ServiceOuterClass.BroadcastMode
+import cosmos.tx.v1beta1.TxOuterClass
 import cosmos.tx.v1beta1.TxOuterClass.TxBody
 import io.grpc.ManagedChannel
+import io.provenance.client.common.gas.GasEstimate
 import io.provenance.client.grpc.BaseReqSigner
-import io.provenance.client.grpc.GasEstimationMethod
+import io.provenance.client.grpc.GasEstimator
 import io.provenance.client.grpc.PbClient
 import io.provenance.metadata.v1.ContractSpecificationRequest
 import io.provenance.metadata.v1.ContractSpecificationResponse
 import io.provenance.metadata.v1.ScopeSpecificationRequest
 import io.provenance.metadata.v1.ScopeSpecificationResponse
+import io.provenance.msgfees.v1.CalculateTxFeesRequest
 import org.slf4j.Logger
 import java.net.URI
 import java.util.concurrent.TimeUnit
@@ -21,11 +24,22 @@ fun Collection<Message>.toTxBody(): TxBody = TxBody.newBuilder()
     .build()
 fun Message.toAny(typeUrlPrefix: String = "") = Any.pack(this, typeUrlPrefix)
 
+val doubledTransactionGasEstimator: GasEstimator =
+    { tx: TxOuterClass.Tx, adjustment: Double ->
+        val estimate = msgFeeClient.calculateTxFees(
+            CalculateTxFeesRequest.newBuilder()
+                .setTxBytes(tx.toByteString())
+                .setGasAdjustment(adjustment.toFloat())
+                .build()
+        )
+        GasEstimate(2 * estimate.estimatedGas, estimate.totalFeesList, estimate.additionalFeesList)
+    }
+
 class ProvenanceClient(channel: ManagedChannel, val logger: Logger, val location: P8eLocationExtension) {
     private val inner = PbClient(
         location.chainId!!,
         URI(location.provenanceUrl!!),
-        GasEstimationMethod.MSG_FEE_CALCULATION,
+        doubledTransactionGasEstimator,
         channel = channel
     )
     private val queryTimeoutSeconds = location.provenanceQueryTimeoutSeconds.toLong()
