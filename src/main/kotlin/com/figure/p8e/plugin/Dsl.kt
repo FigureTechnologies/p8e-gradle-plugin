@@ -18,6 +18,7 @@ open class P8eLocationExtension {
     var txBatchSize: String = "10"
     var txFeeAdjustment: String = "1.25"
     var fixedGasLimit: Long = 0
+    var feeGranterAddress: String? = null
     var osHeaders: Map<String, String> = emptyMap()
 }
 

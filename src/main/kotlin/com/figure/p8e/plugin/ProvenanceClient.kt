@@ -66,6 +66,7 @@ class ProvenanceClient(channel: ManagedChannel, val logger: Logger, val location
                 signers = listOf(signer),
                 mode = BroadcastMode.BROADCAST_MODE_BLOCK, // faux block, will poll in background
                 gasAdjustment = location.txFeeAdjustment.toDouble(),
+                feeGranter = location.feeGranterAddress?.takeIf { it.isNotBlank() },
                 txHashHandler = { logger.trace("Preparing to broadcast $it") }
             )
 
