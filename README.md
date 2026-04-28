@@ -94,6 +94,7 @@ p8e {
             chainId: System.getenv('CHAIN_ID'),
             encryptionPrivateKey: System.getenv('ENCRYPTION_PRIVATE_KEY'),
             signingPrivateKey: System.getenv('SIGNING_PRIVATE_KEY'),
+            feeGranterAddress: System.getenv('FEE_GRANTER_ADDRESS'),
             txBatchSize: "10",
             osHeaders: [
                 // optional object store grpc headers here
@@ -137,6 +138,7 @@ p8e {
             provenanceUrl = System.getenv("PROVENANCE_GRPC_URL")
             encryptionPrivateKey = System.getenv("ENCRYPTION_PRIVATE_KEY")
             signingPrivateKey = System.getenv("SIGNING_PRIVATE_KEY")
+            feeGranterAddress = System.getenv("FEE_GRANTER_ADDRESS")
             chainId = "pio-mainnet-1"
             mainNet = true
             txFeeAdjustment = "2.0"
