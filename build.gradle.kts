@@ -86,6 +86,14 @@ tasks.withType<KotlinCompile> {
 tasks.withType<ShadowJar> {
     archiveClassifier.set("")
     isZip64 = true
+
+    // Merge duplicate META-INF/services entries from embedded gRPC jars.
+    // Without this, LoadBalancerProvider SPI can be emptied/overwritten in the fat jar.
+    mergeServiceFiles()
+
+    // Relocate gRPC so Gradle 9 plugin-classpath instrumentation / parent classloaders
+    // cannot mix unshaded io.grpc from this fat jar with other plugins (FGP, GAR, etc.).
+    relocate("io.grpc", "com.figure.p8e.shaded.io.grpc")
 }
 
 tasks.withType<Test> {
