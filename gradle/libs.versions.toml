@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.9.10"
+kotlin = "1.9.25"
 reflections = "0.9.10"
 provenance-scope-sdk = "0.7.0"
 provenance-client = "2.6.0"
